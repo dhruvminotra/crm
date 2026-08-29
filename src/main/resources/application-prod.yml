@@ -10,6 +10,10 @@ spring:
 crm:
   jwt:
     secret: ${CRM_JWT_SECRET}
+  cors:
+    # Comma-separated origins of the deployed frontend,
+    # e.g. https://crm-ui.pages.dev,https://crm.yourdomain.com
+    allowed-origins: ${CRM_CORS_ORIGINS}
 
 logging:
   level:
