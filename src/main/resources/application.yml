@@ -22,7 +22,7 @@ crm:
     secret: local-dev-secret-change-me-0123456789abcdef
     expiry-minutes: 480
   cors:
-    allowed-origins: http://localhost:5173
+    allowed-origins: http://localhost:*
 
 springdoc:
   swagger-ui:
