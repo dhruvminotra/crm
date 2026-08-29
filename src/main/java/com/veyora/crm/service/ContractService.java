@@ -78,6 +78,12 @@ public class ContractService {
             } else {
                 throw new BadRequestException("Select an existing rate plan or define a new one");
             }
+            // The plan's hotel comes from its room (as tf-main addRatePlan does);
+            // guard against contracting a plan that belongs to another hotel.
+            if (request.getHotelId() != null && !request.getHotelId().equals(plan.getHotelId())) {
+                throw new BadRequestException(
+                        "Selected room/rate plan does not belong to this hotel");
+            }
             result.put("rpId", plan.getId());
             result.put("rpNm", plan.getPlanName());
             result.put("curr", plan.getCurrency());
@@ -86,8 +92,19 @@ public class ContractService {
             if (request.getRates() == null || request.getRates().isEmpty()) {
                 throw new BadRequestException("At least one rate window is required");
             }
+            // tf-main addHotelRates reads the wizard's rateplanid/hotelid for
+            // every rate row, so fill them in from the wizard context here.
+            Long ratePlanId = request.getSelectedRatePlanId();
+            if (ratePlanId == null) {
+                throw new BadRequestException("Select a rate plan before adding rates");
+            }
             List<Long> savedIds = new ArrayList<>();
             for (RateUpdateRequest rate : request.getRates()) {
+                rate.setHotelId(request.getHotelId());
+                rate.setRatePlanId(ratePlanId);
+                if (rate.getSupplierId() == null) {
+                    rate.setSupplierId(request.getSupplierId());
+                }
                 SupplierPackagePricing saved = supplierPackageService.updateHotelRates(rate, user);
                 savedIds.add(saved.getId());
             }
@@ -95,9 +112,14 @@ public class ContractService {
             result.put("promos", hotelDataService.loadPromotionsForHotel(request.getHotelId(), true));
         }
         case 3 -> {
+            // tf-main addPromotion takes hotelid from the wizard form.
             int added = 0;
             if (request.getPromotions() != null) {
                 for (ProductPromotionOfferRequest promo : request.getPromotions()) {
+                    promo.setHotelId(request.getHotelId());
+                    if (promo.getSupplierId() == null) {
+                        promo.setSupplierId(request.getSupplierId());
+                    }
                     hotelDataService.saveProductPromotion(promo, user);
                     added++;
                 }
