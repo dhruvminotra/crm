@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: ${CRM_DB_URL}
+    username: ${CRM_DB_USER}
+    password: ${CRM_DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    show-sql: false
+
+crm:
+  jwt:
+    secret: ${CRM_JWT_SECRET}
+
+logging:
+  level:
+    root: INFO
+    com.veyora: INFO
