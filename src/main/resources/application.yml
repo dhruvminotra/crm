@@ -27,3 +27,11 @@ crm:
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
+
+logging:
+  file:
+    name: logs/crm.log
+  logback:
+    rollingpolicy:
+      max-file-size: 50MB
+      max-history: 7
