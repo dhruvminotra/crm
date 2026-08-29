@@ -12,6 +12,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmailIgnoreCase(String email);
 
+    /** tf-main UserManageAction.SUGGEST_USERS with supRls=true (supplier roles). */
+    @Query("select u from User u where u.roleType in :roleTypes and u.activated = 'Y' "
+            + "and (lower(u.name) like :prefix or lower(u.email) like :prefix) order by u.name")
+    List<User> suggestUsers(@Param("roleTypes") List<RoleType> roleTypes,
+                            @Param("prefix") String prefix);
+
     /**
      * The user-dashboard search behind tf-main UserBean.searchDeskUsers /
      * UserSearchQueryVO: filter by roletype, optional activated flag and

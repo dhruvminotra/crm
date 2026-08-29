@@ -8,14 +8,18 @@ import com.veyora.crm.dto.ContractSummaryDto;
 import com.veyora.crm.dto.ProductPromotionOfferRequest;
 import com.veyora.crm.dto.RateUpdateRequest;
 import com.veyora.crm.entity.User;
+import com.veyora.crm.entity.HotelSupplierMap;
 import com.veyora.crm.entity.MarketPlaceHotel;
+import com.veyora.crm.entity.User;
 import com.veyora.crm.entity.ProductPromotionOffer;
 import com.veyora.crm.entity.RatePlan;
 import com.veyora.crm.entity.SupplierPackagePricing;
 import com.veyora.crm.exceptionhandler.BadRequestException;
+import com.veyora.crm.repository.HotelSupplierMapRepository;
 import com.veyora.crm.repository.MarketPlaceHotelRepository;
 import com.veyora.crm.repository.ProductPromotionOfferRepository;
 import com.veyora.crm.repository.SupplierPackagePricingRepository;
+import com.veyora.crm.repository.UserRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,17 +40,23 @@ public class ContractService {
     private final MarketPlaceHotelRepository hotelRepository;
     private final SupplierPackagePricingRepository pricingRepository;
     private final ProductPromotionOfferRepository promotionOfferRepository;
+    private final HotelSupplierMapRepository hotelSupplierMapRepository;
+    private final UserRepository userRepository;
 
     public ContractService(SupplierPackageService supplierPackageService,
             HotelDataService hotelDataService,
             MarketPlaceHotelRepository hotelRepository,
             SupplierPackagePricingRepository pricingRepository,
-            ProductPromotionOfferRepository promotionOfferRepository) {
+            ProductPromotionOfferRepository promotionOfferRepository,
+            HotelSupplierMapRepository hotelSupplierMapRepository,
+            UserRepository userRepository) {
         this.supplierPackageService = supplierPackageService;
         this.hotelDataService = hotelDataService;
         this.hotelRepository = hotelRepository;
         this.pricingRepository = pricingRepository;
         this.promotionOfferRepository = promotionOfferRepository;
+        this.hotelSupplierMapRepository = hotelSupplierMapRepository;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -103,9 +113,9 @@ public class ContractService {
     }
 
     /**
-     * Contracting dashboard per hotel: audited/unaudited rate counts, promotion
-     * counts and last valid rate date over the next 180 days
-     * (tf-main loadHotelContractsForManage).
+     * Contracts dashboard rows for a city, as tf-main loadHotelContractsForManage:
+     * one row per hotel-supplier mapping with audited/unaudited rate counts,
+     * live promotion counts and the last valid rate date over the next 180 days.
      */
     public List<ContractSummaryDto> loadHotelContractsForManage(Integer cityId) {
         List<MarketPlaceHotel> hotels = cityId != null
@@ -114,23 +124,41 @@ public class ContractService {
         if (hotels.isEmpty()) {
             return List.of();
         }
+        Map<Long, MarketPlaceHotel> hotelMap = new HashMap<>();
+        for (MarketPlaceHotel hotel : hotels) {
+            hotelMap.put(hotel.getId(), hotel);
+        }
+        List<Long> hotelIds = new ArrayList<>(hotelMap.keySet());
+
+        // mappings for the city's hotels (tf-main getMappingsForCity)
+        List<HotelSupplierMap> mappings = hotelSupplierMapRepository
+                .findByHotelIdInAndMapType(hotelIds, HotelSupplierMap.TYPE_SUPPLIER);
+        if (mappings.isEmpty()) {
+            return List.of();
+        }
+
+        Map<Long, User> suppliers = new HashMap<>();
+        userRepository.findAllById(mappings.stream().map(HotelSupplierMap::getSupplierId).toList())
+                .forEach(u -> suppliers.put(u.getUserId(), u));
+
         LocalDate startDate = LocalDate.now();
         LocalDate endDate = startDate.plusDays(Constant.CONTRACT_SUMMARY_WINDOW_DAYS);
 
-        Map<Long, ContractSummaryDto> summaryMap = new HashMap<>();
-        for (MarketPlaceHotel hotel : hotels) {
+        List<ContractSummaryDto> rows = new ArrayList<>();
+        for (HotelSupplierMap mapping : mappings) {
+            MarketPlaceHotel hotel = hotelMap.get(mapping.getHotelId());
+            User supplier = suppliers.get(mapping.getSupplierId());
             ContractSummaryDto dto = new ContractSummaryDto();
-            dto.setHotelId(hotel.getId());
-            dto.setHotelName(hotel.getName());
-            summaryMap.put(hotel.getId(), dto);
-        }
+            dto.setMappingId(mapping.getId());
+            dto.setHotelId(mapping.getHotelId());
+            dto.setHotelName(hotel != null ? hotel.getName() : mapping.getHotelName());
+            dto.setCityId(hotel != null ? hotel.getCityId() : mapping.getCityId());
+            dto.setCityName(hotel != null ? hotel.getCityName() : null);
+            dto.setSupplierId(mapping.getSupplierId());
+            dto.setSupplierName(supplier != null ? supplier.getName() : String.valueOf(mapping.getSupplierId()));
 
-        List<Long> hotelIds = hotels.stream().map(MarketPlaceHotel::getId).toList();
-        for (Long hotelId : hotelIds) {
-            List<SupplierPackagePricing> pricings = pricingRepository
-                    .findOverlapping(hotelId, startDate, endDate);
-            ContractSummaryDto dto = summaryMap.get(hotelId);
-            for (SupplierPackagePricing pricing : pricings) {
+            for (SupplierPackagePricing pricing : pricingRepository
+                    .findForCommissionCascade(mapping.getHotelId(), mapping.getSupplierId(), startDate, endDate)) {
                 if (pricing.isAudited()) {
                     dto.setAudited(dto.getAudited() + 1);
                     if (dto.getLastValidDate() == null
@@ -141,17 +169,19 @@ public class ContractService {
                     dto.setUnaudited(dto.getUnaudited() + 1);
                 }
             }
+            rows.add(dto);
         }
 
         List<ProductPromotionOffer> promos = promotionOfferRepository.findActiveForHotels(
                 hotelIds, ProductPromotionOfferType.SUPPLIER_PROMOTION,
                 ProductPromotionOfferStatus.ENABLED, startDate, endDate);
+        Map<Long, Integer> promoCounts = new HashMap<>();
         for (ProductPromotionOffer promo : promos) {
-            ContractSummaryDto dto = summaryMap.get(promo.getHotelId());
-            if (dto != null) {
-                dto.setPromotions(dto.getPromotions() + 1);
-            }
+            promoCounts.merge(promo.getHotelId(), 1, Integer::sum);
         }
-        return new ArrayList<>(summaryMap.values());
+        for (ContractSummaryDto row : rows) {
+            row.setPromotions(promoCounts.getOrDefault(row.getHotelId(), 0));
+        }
+        return rows;
     }
 }
