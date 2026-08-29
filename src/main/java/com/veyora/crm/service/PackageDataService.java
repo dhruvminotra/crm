@@ -4,7 +4,7 @@ import com.veyora.crm.dto.InventoryCellDto;
 import com.veyora.crm.dto.InventoryGridResponse;
 import com.veyora.crm.dto.InventoryUpdateRequest;
 import com.veyora.crm.dto.SupplierPackagePricingDto;
-import com.veyora.crm.entity.AppUser;
+import com.veyora.crm.entity.User;
 import com.veyora.crm.entity.HotelRoom;
 import com.veyora.crm.entity.PackageInventory;
 import com.veyora.crm.entity.SupplierPackagePricing;
@@ -57,7 +57,7 @@ public class PackageDataService {
      * (tf-main updateHotelInventory -> addOrUpdateHotelRoomInventoryForDates).
      */
     @Transactional
-    public void updateHotelInventory(InventoryUpdateRequest request, AppUser user) {
+    public void updateHotelInventory(InventoryUpdateRequest request, User user) {
         if (request.getToDate().isBefore(request.getFromDate())) {
             throw new BadRequestException("toDate must not be before fromDate");
         }

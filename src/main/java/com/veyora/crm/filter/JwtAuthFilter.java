@@ -1,7 +1,7 @@
 package com.veyora.crm.filter;
 
-import com.veyora.crm.entity.AppUser;
-import com.veyora.crm.repository.AppUserRepository;
+import com.veyora.crm.entity.User;
+import com.veyora.crm.repository.UserRepository;
 import com.veyora.crm.service.JwtService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -20,11 +20,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-    private final AppUserRepository appUserRepository;
+    private final UserRepository userRepository;
 
-    public JwtAuthFilter(JwtService jwtService, AppUserRepository appUserRepository) {
+    public JwtAuthFilter(JwtService jwtService, UserRepository userRepository) {
         this.jwtService = jwtService;
-        this.appUserRepository = appUserRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -37,11 +37,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             try {
                 Claims claims = jwtService.parseToken(header.substring(7));
                 Long userId = Long.valueOf(claims.getSubject());
-                AppUser user = appUserRepository.findById(userId).orElse(null);
-                if (user != null && user.isEnabled()) {
+                User user = userRepository.findById(userId).orElse(null);
+                if (user != null && user.isActivatedUser()) {
                     UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                             user, null,
-                            List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name())));
+                            List.of(new SimpleGrantedAuthority("ROLE_" + user.getRoleType().name())));
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
             } catch (Exception ignored) {

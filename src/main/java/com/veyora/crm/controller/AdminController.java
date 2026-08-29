@@ -4,11 +4,11 @@ import com.veyora.crm.constant.Constant;
 import com.veyora.crm.dto.ApiResponse;
 import com.veyora.crm.dto.RoomRequest;
 import com.veyora.crm.dto.UserRequest;
-import com.veyora.crm.entity.AppUser;
+import com.veyora.crm.entity.User;
 import com.veyora.crm.entity.HotelRoom;
 import com.veyora.crm.entity.HotelSupplierMap;
 import com.veyora.crm.entity.MarketPlaceHotel;
-import com.veyora.crm.repository.AppUserRepository;
+import com.veyora.crm.repository.UserRepository;
 import com.veyora.crm.service.AdminService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -30,11 +30,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminController {
 
     private final AdminService adminService;
-    private final AppUserRepository appUserRepository;
+    private final UserRepository userRepository;
 
-    public AdminController(AdminService adminService, AppUserRepository appUserRepository) {
+    public AdminController(AdminService adminService, UserRepository userRepository) {
         this.adminService = adminService;
-        this.appUserRepository = appUserRepository;
+        this.userRepository = userRepository;
     }
 
     /* ---------------- hotels ---------------- */
@@ -78,19 +78,20 @@ public class AdminController {
     /* ---------------- users ---------------- */
 
     @GetMapping("/users")
-    public ApiResponse<List<AppUser>> users() {
+    public ApiResponse<List<User>> users() {
         return ApiResponse.ok(adminService.listUsers());
     }
 
     @PostMapping("/users")
-    public ApiResponse<AppUser> saveUser(@Valid @RequestBody UserRequest request) {
-        AppUser user = request.getUserId() != null
-                ? appUserRepository.findById(request.getUserId()).orElse(new AppUser())
-                : new AppUser();
+    public ApiResponse<User> saveUser(@Valid @RequestBody UserRequest request) {
+        User user = request.getUserId() != null
+                ? userRepository.findById(request.getUserId()).orElse(new User())
+                : new User();
         user.setEmail(request.getEmail());
-        user.setDisplayName(request.getDisplayName());
-        user.setRole(request.getRole());
-        user.setBusinessCurrency(request.getBusinessCurrency());
+        user.setName(request.getDisplayName());
+        user.setRoleType(request.getRole());
+        user.setRole(request.getRole().getRoleChar());
+        user.setBaseCurrency(request.getBusinessCurrency());
         return ApiResponse.ok("User saved", adminService.saveUser(user, request.getPassword()));
     }
 }

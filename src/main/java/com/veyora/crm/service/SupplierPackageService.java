@@ -5,7 +5,7 @@ import com.veyora.crm.constant.PolicyType;
 import com.veyora.crm.constant.RoomOccupancy;
 import com.veyora.crm.dto.RatePlanRequest;
 import com.veyora.crm.dto.RateUpdateRequest;
-import com.veyora.crm.entity.AppUser;
+import com.veyora.crm.entity.User;
 import com.veyora.crm.entity.HotelPolicy;
 import com.veyora.crm.entity.HotelRoom;
 import com.veyora.crm.entity.RatePlan;
@@ -70,7 +70,7 @@ public class SupplierPackageService {
      * exactly as tf-main addRatePlan builds it.
      */
     @Transactional
-    public RatePlan addOrUpdateRatePlan(RatePlanRequest request, AppUser user) {
+    public RatePlan addOrUpdateRatePlan(RatePlanRequest request, User user) {
         HotelRoom room = hotelRoomRepository.findById(request.getRoomId())
                 .orElseThrow(() -> new NotFoundException("Room " + request.getRoomId() + " not found"));
 
@@ -143,7 +143,7 @@ public class SupplierPackageService {
      * tf-main updateHotelRates + storeAndUpdateAvailablePackagePricing.
      */
     @Transactional
-    public SupplierPackagePricing updateHotelRates(RateUpdateRequest request, AppUser user) {
+    public SupplierPackagePricing updateHotelRates(RateUpdateRequest request, User user) {
         if (request.getEndDate().isBefore(request.getStartDate())) {
             throw new BadRequestException("endDate must not be before startDate");
         }

@@ -11,7 +11,7 @@ import com.veyora.crm.dto.PolicyRequest;
 import com.veyora.crm.dto.ProductPromotionOfferRequest;
 import com.veyora.crm.dto.RatePlanRequest;
 import com.veyora.crm.dto.RateUpdateRequest;
-import com.veyora.crm.entity.AppUser;
+import com.veyora.crm.entity.User;
 import com.veyora.crm.entity.HotelPolicy;
 import com.veyora.crm.entity.MarketPlaceHotel;
 import com.veyora.crm.entity.ProductPromotionOffer;
@@ -75,8 +75,8 @@ public class HotelController {
         this.contractService = contractService;
     }
 
-    private AppUser user() {
-        AppUser user = AuthService.getLoggedInUser();
+    private User user() {
+        User user = AuthService.getLoggedInUser();
         if (user == null) {
             throw new BadRequestException("No logged-in user");
         }
@@ -99,7 +99,7 @@ public class HotelController {
             @RequestParam(required = false) Long hotelId,
             @RequestParam(required = false) Long supplierId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate) {
-        AppUser user = user();
+        User user = user();
         MarketPlaceHotel hotel = hotelDataService.loadHotelForManage(user, hotelId);
         Long applicableSupplier = hotelDataService.getApplicableSupplierId(user, supplierId);
         return ApiResponse.ok(packageDataService.loadHotelInventoryAndRates(

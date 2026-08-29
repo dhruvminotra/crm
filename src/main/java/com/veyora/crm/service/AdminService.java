@@ -1,13 +1,13 @@
 package com.veyora.crm.service;
 
 import com.veyora.crm.dto.RoomRequest;
-import com.veyora.crm.entity.AppUser;
+import com.veyora.crm.entity.User;
 import com.veyora.crm.entity.HotelRoom;
 import com.veyora.crm.entity.HotelSupplierMap;
 import com.veyora.crm.entity.MarketPlaceHotel;
 import com.veyora.crm.exceptionhandler.BadRequestException;
 import com.veyora.crm.exceptionhandler.NotFoundException;
-import com.veyora.crm.repository.AppUserRepository;
+import com.veyora.crm.repository.UserRepository;
 import com.veyora.crm.repository.HotelRoomRepository;
 import com.veyora.crm.repository.HotelSupplierMapRepository;
 import com.veyora.crm.repository.MarketPlaceHotelRepository;
@@ -26,18 +26,18 @@ public class AdminService {
     private final MarketPlaceHotelRepository hotelRepository;
     private final HotelRoomRepository hotelRoomRepository;
     private final HotelSupplierMapRepository hotelSupplierMapRepository;
-    private final AppUserRepository appUserRepository;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     public AdminService(MarketPlaceHotelRepository hotelRepository,
             HotelRoomRepository hotelRoomRepository,
             HotelSupplierMapRepository hotelSupplierMapRepository,
-            AppUserRepository appUserRepository,
+            UserRepository userRepository,
             PasswordEncoder passwordEncoder) {
         this.hotelRepository = hotelRepository;
         this.hotelRoomRepository = hotelRoomRepository;
         this.hotelSupplierMapRepository = hotelSupplierMapRepository;
-        this.appUserRepository = appUserRepository;
+        this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -83,7 +83,7 @@ public class AdminService {
         String type = mapType != null ? mapType : HotelSupplierMap.TYPE_SUPPLIER;
         hotelRepository.findById(hotelId)
                 .orElseThrow(() -> new NotFoundException("Hotel " + hotelId + " not found"));
-        appUserRepository.findById(supplierId)
+        userRepository.findById(supplierId)
                 .orElseThrow(() -> new NotFoundException("User " + supplierId + " not found"));
         if (hotelSupplierMapRepository.existsByHotelIdAndSupplierIdAndMapType(hotelId, supplierId, type)) {
             throw new BadRequestException("Mapping already exists");
@@ -101,15 +101,15 @@ public class AdminService {
 
     /* ---------------- users ---------------- */
 
-    public List<AppUser> listUsers() {
-        return appUserRepository.findAll();
+    public List<User> listUsers() {
+        return userRepository.findAll();
     }
 
     @Transactional
-    public AppUser saveUser(AppUser user, String rawPassword) {
+    public User saveUser(User user, String rawPassword) {
         if (rawPassword != null && !rawPassword.isBlank()) {
             user.setPassword(passwordEncoder.encode(rawPassword));
         }
-        return appUserRepository.save(user);
+        return userRepository.save(user);
     }
 }

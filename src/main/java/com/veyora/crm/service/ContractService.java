@@ -7,7 +7,7 @@ import com.veyora.crm.dto.ContractStepRequest;
 import com.veyora.crm.dto.ContractSummaryDto;
 import com.veyora.crm.dto.ProductPromotionOfferRequest;
 import com.veyora.crm.dto.RateUpdateRequest;
-import com.veyora.crm.entity.AppUser;
+import com.veyora.crm.entity.User;
 import com.veyora.crm.entity.MarketPlaceHotel;
 import com.veyora.crm.entity.ProductPromotionOffer;
 import com.veyora.crm.entity.RatePlan;
@@ -54,7 +54,7 @@ public class ContractService {
      * 1 select/create rate plan, 2 load rates, 3 promotions, 4 done/summary.
      */
     @Transactional
-    public Map<String, Object> moveContractStep(ContractStepRequest request, AppUser user) {
+    public Map<String, Object> moveContractStep(ContractStepRequest request, User user) {
         Map<String, Object> result = new HashMap<>();
         int stepId = request.getStepId();
 

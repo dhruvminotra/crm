@@ -6,7 +6,7 @@ import com.veyora.crm.constant.ProductPromotionOfferType;
 import com.veyora.crm.constant.RoleType;
 import com.veyora.crm.dto.PolicyRequest;
 import com.veyora.crm.dto.ProductPromotionOfferRequest;
-import com.veyora.crm.entity.AppUser;
+import com.veyora.crm.entity.User;
 import com.veyora.crm.entity.HotelPolicy;
 import com.veyora.crm.entity.HotelSupplierMap;
 import com.veyora.crm.entity.MarketPlaceHotel;
@@ -59,12 +59,12 @@ public class HotelDataService {
     /* --------------------------------------------------------------------- */
 
     /** Hotels the logged-in user may manage; system users see all enabled hotels. */
-    public List<MarketPlaceHotel> loadHotelsForManage(AppUser user) {
+    public List<MarketPlaceHotel> loadHotelsForManage(User user) {
         if (isSystemUser(user)) {
             return hotelRepository.findByEnabledTrue();
         }
         List<Long> hotelIds = hotelSupplierMapRepository
-                .findBySupplierIdAndMapType(user.getId(), HotelSupplierMap.TYPE_SUPPLIER)
+                .findBySupplierIdAndMapType(user.getUserId(), HotelSupplierMap.TYPE_SUPPLIER)
                 .stream().map(HotelSupplierMap::getHotelId).toList();
         if (hotelIds.isEmpty()) {
             return List.of();
@@ -76,7 +76,7 @@ public class HotelDataService {
      * Resolve the hotel to manage: explicit id if permitted, else the first
      * mapped hotel (tf-main loadHotelForManage).
      */
-    public MarketPlaceHotel loadHotelForManage(AppUser user, Long requestedHotelId) {
+    public MarketPlaceHotel loadHotelForManage(User user, Long requestedHotelId) {
         List<MarketPlaceHotel> allowed = loadHotelsForManage(user);
         if (requestedHotelId != null) {
             return allowed.stream().filter(h -> h.getId().equals(requestedHotelId)).findFirst()
@@ -92,15 +92,15 @@ public class HotelDataService {
      * Which supplier the data is written under: explicit param for system
      * users, otherwise the logged-in supplier (tf-main getApplicableSupplierId).
      */
-    public Long getApplicableSupplierId(AppUser user, Long requestedSupplierId) {
+    public Long getApplicableSupplierId(User user, Long requestedSupplierId) {
         if (requestedSupplierId != null && isSystemUser(user)) {
             return requestedSupplierId;
         }
-        return user.getId();
+        return user.getUserId();
     }
 
-    public boolean isSystemUser(AppUser user) {
-        RoleType r = user.getRole();
+    public boolean isSystemUser(User user) {
+        RoleType r = user.getRoleType();
         return r == RoleType.ADMIN || r == RoleType.SUPERVISOR || r == RoleType.PRODUCT
                 || r == RoleType.BUSINESS_MANAGER;
     }
@@ -123,7 +123,7 @@ public class HotelDataService {
     }
 
     @Transactional
-    public ProductPromotionOffer saveProductPromotion(ProductPromotionOfferRequest request, AppUser user) {
+    public ProductPromotionOffer saveProductPromotion(ProductPromotionOfferRequest request, User user) {
         ProductPromotionOffer offer = request.getPromotionId() != null
                 ? loadPromotion(request.getPromotionId())
                 : new ProductPromotionOffer();
@@ -163,7 +163,7 @@ public class HotelDataService {
     }
 
     @Transactional
-    public HotelPolicy savePolicy(PolicyRequest request, AppUser user) {
+    public HotelPolicy savePolicy(PolicyRequest request, User user) {
         HotelPolicy policy = request.getPolicyId() != null
                 ? loadPolicy(request.getPolicyId())
                 : new HotelPolicy();

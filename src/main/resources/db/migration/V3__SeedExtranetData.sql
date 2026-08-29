@@ -1,10 +1,27 @@
--- Seed: an admin, a hotelier, one hotel with rooms and the supplier mapping.
--- Password for both users is "admin123" (BCrypt), local/dev convenience only.
-INSERT INTO app_user (email, password, display_name, role, business_currency, enabled, created_at, updated_at)
-VALUES ('admin@veyora.com', '$2a$10$FL7WCxcy8B1/pPRezn/sdO8dADLU1C442gcMsv.s.yc.xC7EzrlHe',
-        'CRM Admin', 'ADMIN', 'INR', TRUE, NOW(), NOW()),
-       ('hotelier@veyora.com', '$2a$10$FL7WCxcy8B1/pPRezn/sdO8dADLU1C442gcMsv.s.yc.xC7EzrlHe',
-        'Demo Hotelier', 'HOTELIER', 'INR', TRUE, NOW(), NOW());
+-- Seed users (tf-main role chars: A=admin, E=supplier, D=desk user).
+-- Password for all is "admin123" (BCrypt), local/dev convenience only.
+INSERT INTO users (role, roletype, activated, name, email, e_verified, e_activated,
+                   mobile, m_verified, m_activated, password, base_currency, uuid)
+VALUES ('A', 1, 'Y', 'CRM Admin', 'admin@veyora.com', 'Y', 'Y',
+        '9800000001', 'Y', 'Y',
+        '$2a$10$FL7WCxcy8B1/pPRezn/sdO8dADLU1C442gcMsv.s.yc.xC7EzrlHe', 'INR',
+        '3f1c2a10-0000-4000-8000-000000000001'),
+       ('E', 8, 'Y', 'Demo Hotelier', 'hotelier@veyora.com', 'Y', 'Y',
+        '9800000002', 'Y', 'Y',
+        '$2a$10$FL7WCxcy8B1/pPRezn/sdO8dADLU1C442gcMsv.s.yc.xC7EzrlHe', 'INR',
+        '3f1c2a10-0000-4000-8000-000000000002');
+
+-- Desk user managed by the hotelier (pageownerid = desk admin, as tf-main)
+INSERT INTO users (role, roletype, activated, name, email, mobile, password,
+                   base_currency, pageownerid, uuid)
+VALUES ('D', 12, 'Y', 'Front Desk One', 'desk@veyora.com', '9800000003',
+        '$2a$10$FL7WCxcy8B1/pPRezn/sdO8dADLU1C442gcMsv.s.yc.xC7EzrlHe', 'INR',
+        2, '3f1c2a10-0000-4000-8000-000000000003');
+
+INSERT INTO user_hist (user_id, history)
+VALUES (1, 'User created by system seed'),
+       (2, 'User created by system seed'),
+       (3, 'User created by desk admin 2');
 
 INSERT INTO market_place_hotel (name, city_id, city_name, country_code, star_rating, is_cruise, enabled, created_at, updated_at)
 VALUES ('The Grand Demo Palace', 1, 'Bengaluru', 'IN', 5, FALSE, TRUE, NOW(), NOW());
