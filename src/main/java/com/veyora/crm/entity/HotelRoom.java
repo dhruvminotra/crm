@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/** Room master, equivalent of tf-main HotelRoom. */
 @Getter
 @Setter
 @NoArgsConstructor

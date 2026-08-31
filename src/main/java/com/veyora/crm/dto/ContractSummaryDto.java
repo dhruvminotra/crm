@@ -3,11 +3,6 @@ package com.veyora.crm.dto;
 import java.time.LocalDate;
 import lombok.Data;
 
-/**
- * One row of the hotel contracts dashboard: a hotel-supplier mapping plus its
- * contracting summary (tf-main hotel_contracts_manage.jsp row +
- * HotelContractingSummaryData).
- */
 @Data
 public class ContractSummaryDto {
 

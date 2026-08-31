@@ -25,16 +25,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Inventory management, mirroring tf-main PackageDataBean
- * (addOrUpdateHotelRoomInventoryForDates) and the inventory-x grid load.
- */
 @Service
 public class PackageDataService {
 
     private static final Logger log = LoggerFactory.getLogger(PackageDataService.class);
 
-    /** Days shown per page of the manage-inventory grid, as in the tf-main UI. */
     public static final int GRID_DAYS = 14;
 
     private final PackageInventoryRepository inventoryRepository;
@@ -52,10 +47,6 @@ public class PackageDataService {
         this.hotelDataService = hotelDataService;
     }
 
-    /**
-     * Upsert per-day inventory over a date range
-     * (tf-main updateHotelInventory -> addOrUpdateHotelRoomInventoryForDates).
-     */
     @Transactional
     public void updateHotelInventory(InventoryUpdateRequest request, User user) {
         if (request.getToDate().isBefore(request.getFromDate())) {
@@ -96,10 +87,6 @@ public class PackageDataService {
                 request.getHotelId(), request.getRoomId(), toSave.size());
     }
 
-    /**
-     * The manage-inventory grid: rooms x dates with inventory cells and the
-     * rates overlapping the window (tf-main loadHotelInventoryAndRates / inventory-x).
-     */
     public InventoryGridResponse loadHotelInventoryAndRates(Long hotelId, Long supplierId,
             LocalDate fromDate) {
         LocalDate start = fromDate != null ? fromDate : LocalDate.now();
@@ -143,10 +130,6 @@ public class PackageDataService {
         return new InventoryGridResponse(hotelId, dates, roomNames, inventoryGrid, rates);
     }
 
-    /**
-     * City-wide inventory position for internal users
-     * (tf-main loadHotelInventoryPosition / inventory-z).
-     */
     public Map<Long, List<InventoryCellDto>> loadHotelInventoryPosition(List<Long> hotelIds,
             LocalDate fromDate) {
         LocalDate start = fromDate != null ? fromDate : LocalDate.now();

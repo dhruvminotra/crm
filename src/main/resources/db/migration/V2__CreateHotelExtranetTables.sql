@@ -1,7 +1,3 @@
--- Hotel extranet tables, modeled on tf-main:
--- MarketPlaceHotel, HotelRoom, HotelSupplierMap, RatePlan,
--- SupplierPackagePricing, PackageInventory, HotelPolicy, ProductPromotionOffer
-
 CREATE TABLE market_place_hotel (
     id           BIGSERIAL PRIMARY KEY,
     name         VARCHAR(200) NOT NULL,

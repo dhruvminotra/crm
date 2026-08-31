@@ -3,7 +3,6 @@ package com.veyora.crm.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-/** Uniform response envelope (the modern form of tf-main AjaxHelper.writeSimpleData). */
 @Getter
 @AllArgsConstructor
 public class ApiResponse<T> {

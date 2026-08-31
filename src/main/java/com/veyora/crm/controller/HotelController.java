@@ -36,27 +36,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * The hotel extranet API. Paths and role gating mirror tf-main
- * HotelNavigation / HotelAction (see /hotels/&lt;action&gt; URLs).
- */
 @RestController
 @RequestMapping(Constant.API_V1 + "/hotels")
 public class HotelController {
 
-    /** tf-main MANAGE_INVENTORY / RATE_PLANS / PROMOTIONS / POLICIES gating. */
     private static final String EXTRANET_ROLES =
             "hasAnyRole('ADMIN','HOTELIER','TOUR_OPERATOR','PRODUCT','SUPERVISOR','BUSINESS_MANAGER')";
 
-    /** tf-main COMMISSIONS gating (no hotelier). */
     private static final String COMMISSION_ROLES =
             "hasAnyRole('ADMIN','PRODUCT','BUSINESS_MANAGER','SUPERVISOR')";
 
-    /** tf-main HOTEL_CONTRACTS_MANAGE gating. */
     private static final String CONTRACTS_ROLES =
             "hasAnyRole('ADMIN','FINANCE','PRODUCT','BUSINESS_MANAGER','SUPERVISOR')";
 
-    /** tf-main INVENTORY / INVENTORY_Z gating. */
     private static final String INVENTORY_POSITION_ROLES =
             "hasAnyRole('ADMIN','PRODUCT','SUPERVISOR','BUSINESS_MANAGER','EXPERT','CALLCENTER')";
 
@@ -83,15 +75,11 @@ public class HotelController {
         return user;
     }
 
-    /* ------------- hotel selection (select_hotel.jsp) ------------- */
-
     @GetMapping("/manage")
     @PreAuthorize(EXTRANET_ROLES)
     public ApiResponse<List<MarketPlaceHotel>> loadHotelsForManage() {
         return ApiResponse.ok(hotelDataService.loadHotelsForManage(user()));
     }
-
-    /* ------------- inventory (manage-inventory / inventory-x) ------------- */
 
     @GetMapping("/manage-inventory")
     @PreAuthorize(EXTRANET_ROLES)
@@ -121,15 +109,11 @@ public class HotelController {
         return ApiResponse.ok(packageDataService.loadHotelInventoryPosition(hotelIds, fromDate));
     }
 
-    /* ------------- rates (update-rates) ------------- */
-
     @PostMapping("/update-rates")
     @PreAuthorize(EXTRANET_ROLES)
     public ApiResponse<SupplierPackagePricing> updateRates(@Valid @RequestBody RateUpdateRequest request) {
         return ApiResponse.ok("Rates updated", supplierPackageService.updateHotelRates(request, user()));
     }
-
-    /* ------------- rate plans (rate-plans / edit-rate-plans / edit-rate-plan) ------------- */
 
     @GetMapping("/rate-plans")
     @PreAuthorize(EXTRANET_ROLES)
@@ -155,8 +139,6 @@ public class HotelController {
     public ApiResponse<List<SupplierPackagePricing>> ratePlanRates(@RequestParam("rpid") Long ratePlanId) {
         return ApiResponse.ok(supplierPackageService.loadRatesForRatePlan(ratePlanId));
     }
-
-    /* ------------- promotions and discounts ------------- */
 
     @GetMapping("/promotions")
     @PreAuthorize(EXTRANET_ROLES)
@@ -184,8 +166,6 @@ public class HotelController {
     public ApiResponse<ProductPromotionOffer> promotionsEdit(@RequestParam("pid") Long promotionId) {
         return ApiResponse.ok(hotelDataService.loadPromotion(promotionId));
     }
-
-    /* ------------- policies and commissions ------------- */
 
     @GetMapping("/policies")
     @PreAuthorize(EXTRANET_ROLES)
@@ -218,8 +198,6 @@ public class HotelController {
     public ApiResponse<HotelPolicy> commissionsSave(@Valid @RequestBody PolicyRequest request) {
         return ApiResponse.ok("Commission saved", hotelDataService.savePolicy(request, user()));
     }
-
-    /* ------------- contracts (hotel-contracts-manage / contract-x) ------------- */
 
     @GetMapping("/hotel-contracts-manage")
     @PreAuthorize(CONTRACTS_ROLES)

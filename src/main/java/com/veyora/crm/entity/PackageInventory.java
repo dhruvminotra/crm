@@ -9,10 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Per-day room allocation, the equivalent of tf-main PackageInventory
- * (written by addOrUpdateHotelRoomInventoryForDates).
- */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -33,18 +29,15 @@ public class PackageInventory extends BaseEntity {
     @Column(name = "stay_date", nullable = false)
     private LocalDate stayDate;
 
-    /** Number of rooms allocated for sale on this date. */
     @Column(nullable = false)
     private int allocated;
 
     @Column(nullable = false)
     private int sold;
 
-    /** Booking cut-off in days for this date. */
     @Column(name = "cut_off_days")
     private Integer cutOffDays;
 
-    /** Stop-sell flag without changing the allocation (tf-main close-for-sale). */
     @Column(name = "close_for_sale", nullable = false)
     private boolean closeForSale = false;
 }

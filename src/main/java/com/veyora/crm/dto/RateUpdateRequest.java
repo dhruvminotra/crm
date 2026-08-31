@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.util.Set;
 import lombok.Data;
 
-/** Mirrors the tf-main /hotels/update-rates form (rateUpdateForm). */
 @Data
 public class RateUpdateRequest {
 
@@ -35,6 +34,5 @@ public class RateUpdateRequest {
     private Integer cutOffDays;
     private String promoCode;
 
-    /** Applicable days of week (MON..SUN); empty/null = all days. */
     private Set<String> applicableDays;
 }

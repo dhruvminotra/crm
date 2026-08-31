@@ -27,10 +27,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * The extranet core, mirroring tf-main HotelDataBean: hotel/supplier scope
- * resolution, policies and promotions.
- */
 @Service
 public class HotelDataService {
 
@@ -54,11 +50,6 @@ public class HotelDataService {
         this.pricingRepository = pricingRepository;
     }
 
-    /* --------------------------------------------------------------------- */
-    /* Scope resolution (tf-main loadHotelForManage / getApplicableSupplierId) */
-    /* --------------------------------------------------------------------- */
-
-    /** Hotels the logged-in user may manage; system users see all enabled hotels. */
     public List<MarketPlaceHotel> loadHotelsForManage(User user) {
         if (isSystemUser(user)) {
             return hotelRepository.findByEnabledTrue();
@@ -72,10 +63,6 @@ public class HotelDataService {
         return hotelRepository.findByIdInAndEnabledTrue(hotelIds);
     }
 
-    /**
-     * Resolve the hotel to manage: explicit id if permitted, else the first
-     * mapped hotel (tf-main loadHotelForManage).
-     */
     public MarketPlaceHotel loadHotelForManage(User user, Long requestedHotelId) {
         List<MarketPlaceHotel> allowed = loadHotelsForManage(user);
         if (requestedHotelId != null) {
@@ -88,10 +75,6 @@ public class HotelDataService {
         return allowed.get(0);
     }
 
-    /**
-     * Which supplier the data is written under: explicit param for system
-     * users, otherwise the logged-in supplier (tf-main getApplicableSupplierId).
-     */
     public Long getApplicableSupplierId(User user, Long requestedSupplierId) {
         if (requestedSupplierId != null && isSystemUser(user)) {
             return requestedSupplierId;
@@ -104,10 +87,6 @@ public class HotelDataService {
         return r == RoleType.ADMIN || r == RoleType.SUPERVISOR || r == RoleType.PRODUCT
                 || r == RoleType.BUSINESS_MANAGER;
     }
-
-    /* ------------------------------------------------------------------ */
-    /* Promotions / discounts (tf-main loadPromotionsForHotel, saveProductPromotion) */
-    /* ------------------------------------------------------------------ */
 
     public List<ProductPromotionOffer> loadPromotionsForHotel(Long hotelId, boolean isLoadPromotions) {
         ProductPromotionOfferType type = isLoadPromotions
@@ -149,10 +128,6 @@ public class HotelDataService {
         return promotionOfferRepository.save(offer);
     }
 
-    /* --------------------------------------------------------------- */
-    /* Policies / commissions (tf-main loadPoliciesForHotel, savePolicy) */
-    /* --------------------------------------------------------------- */
-
     public List<HotelPolicy> loadPoliciesForHotel(Long hotelId, PolicyType policyType) {
         return hotelPolicyRepository.findByHotelIdAndPolicyTypeAndEnabledTrue(hotelId, policyType);
     }
@@ -186,7 +161,7 @@ public class HotelDataService {
                 throw new BadRequestException("Commission percent is required");
             }
             policy.setCommissionPercent(request.getCommissionPercent());
-            // Cascade to live rates in the window, as tf-main updateCommissionsForAllRates
+
             updateCommissionsForAllRates(request.getHotelId(), supplierId,
                     request.getTravelStartDate(), request.getTravelEndDate(),
                     request.getCommissionPercent());

@@ -66,7 +66,7 @@ GRANT ALL PRIVILEGES ON DATABASE crm TO crm_app;
 mvn spring-boot:run
 ```
 
-Server: `http://localhost:8082/crm` — Swagger: `/crm/swagger-ui.html`.
+Server: `http://localhost:8080/crm` — Swagger: `/crm/swagger-ui.html`.
 
 Seed users (local): `admin@veyora.com` / `admin123` (ADMIN),
 `hotelier@veyora.com` / `admin123` (HOTELIER).

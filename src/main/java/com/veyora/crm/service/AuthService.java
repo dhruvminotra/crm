@@ -34,7 +34,6 @@ public class AuthService {
         return new LoginResponse(token, user.getUserId(), user.getName(), user.getRoleType().name());
     }
 
-    /** The logged-in user for the current request (set by JwtAuthFilter). */
     public static User getLoggedInUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication() != null
                 ? SecurityContextHolder.getContext().getAuthentication().getPrincipal()

@@ -12,6 +12,5 @@ public final class Constant {
 
     public static final String DATE_FORMAT = "yyyy-MM-dd";
 
-    /** Default forward window (days) for contract summaries, as in tf-main. */
     public static final int CONTRACT_SUMMARY_WINDOW_DAYS = 180;
 }

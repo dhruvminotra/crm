@@ -6,11 +6,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import lombok.Data;
 
-/** Mirrors the tf-main /hotels/policies-save + /hotels/commissions-save forms. */
 @Data
 public class PolicyRequest {
 
-    private Long policyId; // null = create
+    private Long policyId;
 
     @NotNull
     private Long hotelId;
@@ -23,9 +22,7 @@ public class PolicyRequest {
     private LocalDate travelStartDate;
     private LocalDate travelEndDate;
 
-    /** For CANCELLATION policies: rules as JSON. */
     private String policyJson;
 
-    /** For COMMISSION policies: percentage, cascaded to live rates like tf-main. */
     private BigDecimal commissionPercent;
 }

@@ -20,10 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Admin backend: hotel master, room master, supplier mappings and users.
- * Room save mirrors tf-main HOTEL_ROOM_ADD_UPDATE_SAVE; mapping mirrors MAP_HOTEL.
- */
 @RestController
 @RequestMapping(Constant.ADMIN)
 @PreAuthorize("hasAnyRole('ADMIN','SUPERVISOR','PRODUCT','BUSINESS_MANAGER')")
@@ -37,8 +33,6 @@ public class AdminController {
         this.userRepository = userRepository;
     }
 
-    /* ---------------- hotels ---------------- */
-
     @GetMapping("/hotels")
     public ApiResponse<List<MarketPlaceHotel>> listHotels() {
         return ApiResponse.ok(adminService.listHotels());
@@ -49,8 +43,6 @@ public class AdminController {
         return ApiResponse.ok("Hotel saved", adminService.saveHotel(hotel));
     }
 
-    /* ---------------- rooms ---------------- */
-
     @GetMapping("/rooms")
     public ApiResponse<List<HotelRoom>> rooms(@RequestParam Long hotelId) {
         return ApiResponse.ok(adminService.getRoomsByHotel(hotelId));
@@ -60,8 +52,6 @@ public class AdminController {
     public ApiResponse<HotelRoom> saveRoom(@Valid @RequestBody RoomRequest request) {
         return ApiResponse.ok("Room saved", adminService.saveHotelRoomDetails(request));
     }
-
-    /* ---------------- supplier mapping (MAP_HOTEL) ---------------- */
 
     @PostMapping("/map-hotel")
     public ApiResponse<HotelSupplierMap> mapHotel(@RequestParam Long hotelId,
@@ -74,8 +64,6 @@ public class AdminController {
     public ApiResponse<List<HotelSupplierMap>> hotelMappings(@RequestParam Long hotelId) {
         return ApiResponse.ok(adminService.getMappingsForHotel(hotelId));
     }
-
-    /* ---------------- users ---------------- */
 
     @GetMapping("/users")
     public ApiResponse<List<User>> users() {

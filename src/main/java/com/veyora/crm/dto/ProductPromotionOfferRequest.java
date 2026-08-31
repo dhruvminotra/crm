@@ -10,11 +10,10 @@ import java.time.LocalDate;
 import java.util.List;
 import lombok.Data;
 
-/** Mirrors the tf-main /hotels/promotions-save form (promoForm) for promos and discounts. */
 @Data
 public class ProductPromotionOfferRequest {
 
-    private Long promotionId; // null = create
+    private Long promotionId;
 
     @NotNull
     private Long hotelId;

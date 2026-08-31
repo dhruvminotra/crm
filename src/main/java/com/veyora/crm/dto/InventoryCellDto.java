@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-/** One date cell in the manage-inventory grid. */
 @Getter
 @AllArgsConstructor
 public class InventoryCellDto {

@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/** Equivalent of tf-main MarketPlaceHotel, trimmed to extranet needs. */
 @Getter
 @Setter
 @NoArgsConstructor

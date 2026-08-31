@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/** Small helpers for the CSV columns used by restrictions/applicable days. */
 public final class CsvUtil {
 
     private CsvUtil() {

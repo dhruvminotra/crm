@@ -3,7 +3,6 @@ package com.veyora.crm.constant;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
-/** Stores RoleType as the integer roletype column, as tf-main does. */
 @Converter(autoApply = false)
 public class RoleTypeConverter implements AttributeConverter<RoleType, Integer> {
 

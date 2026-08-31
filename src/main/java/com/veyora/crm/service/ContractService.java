@@ -28,10 +28,6 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * The add-contract wizard and the contracts dashboard, mirroring tf-main
- * moveContractStep and loadHotelContractsForManage.
- */
 @Service
 public class ContractService {
 
@@ -59,10 +55,6 @@ public class ContractService {
         this.userRepository = userRepository;
     }
 
-    /**
-     * The 4-step contract wizard (tf-main /hotels/contract-x):
-     * 1 select/create rate plan, 2 load rates, 3 promotions, 4 done/summary.
-     */
     @Transactional
     public Map<String, Object> moveContractStep(ContractStepRequest request, User user) {
         Map<String, Object> result = new HashMap<>();
@@ -78,8 +70,7 @@ public class ContractService {
             } else {
                 throw new BadRequestException("Select an existing rate plan or define a new one");
             }
-            // The plan's hotel comes from its room (as tf-main addRatePlan does);
-            // guard against contracting a plan that belongs to another hotel.
+
             if (request.getHotelId() != null && !request.getHotelId().equals(plan.getHotelId())) {
                 throw new BadRequestException(
                         "Selected room/rate plan does not belong to this hotel");
@@ -92,8 +83,7 @@ public class ContractService {
             if (request.getRates() == null || request.getRates().isEmpty()) {
                 throw new BadRequestException("At least one rate window is required");
             }
-            // tf-main addHotelRates reads the wizard's rateplanid/hotelid for
-            // every rate row, so fill them in from the wizard context here.
+
             Long ratePlanId = request.getSelectedRatePlanId();
             if (ratePlanId == null) {
                 throw new BadRequestException("Select a rate plan before adding rates");
@@ -112,7 +102,7 @@ public class ContractService {
             result.put("promos", hotelDataService.loadPromotionsForHotel(request.getHotelId(), true));
         }
         case 3 -> {
-            // tf-main addPromotion takes hotelid from the wizard form.
+
             int added = 0;
             if (request.getPromotions() != null) {
                 for (ProductPromotionOfferRequest promo : request.getPromotions()) {
@@ -134,11 +124,6 @@ public class ContractService {
         return result;
     }
 
-    /**
-     * Contracts dashboard rows for a city, as tf-main loadHotelContractsForManage:
-     * one row per hotel-supplier mapping with audited/unaudited rate counts,
-     * live promotion counts and the last valid rate date over the next 180 days.
-     */
     public List<ContractSummaryDto> loadHotelContractsForManage(Integer cityId) {
         List<MarketPlaceHotel> hotels = cityId != null
                 ? hotelRepository.findByCityIdAndEnabledTrue(cityId)
@@ -152,7 +137,6 @@ public class ContractService {
         }
         List<Long> hotelIds = new ArrayList<>(hotelMap.keySet());
 
-        // mappings for the city's hotels (tf-main getMappingsForCity)
         List<HotelSupplierMap> mappings = hotelSupplierMapRepository
                 .findByHotelIdInAndMapType(hotelIds, HotelSupplierMap.TYPE_SUPPLIER);
         if (mappings.isEmpty()) {

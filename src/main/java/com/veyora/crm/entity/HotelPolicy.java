@@ -12,10 +12,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Cancellation / commission policy for a hotel + supplier + travel window,
- * equivalent of tf-main HotelPolicy (savePolicy).
- */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -39,11 +35,9 @@ public class HotelPolicy extends BaseEntity {
     @Column(name = "travel_end_date")
     private LocalDate travelEndDate;
 
-    /** Cancellation rules serialized as JSON (tf-main policyStr). */
     @Column(name = "policy_json", columnDefinition = "TEXT")
     private String policyJson;
 
-    /** Populated for COMMISSION policies. */
     @Column(name = "commission_percent", precision = 7, scale = 2)
     private BigDecimal commissionPercent;
 

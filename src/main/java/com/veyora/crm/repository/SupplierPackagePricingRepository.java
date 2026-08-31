@@ -15,14 +15,12 @@ public interface SupplierPackagePricingRepository extends JpaRepository<Supplier
     Optional<SupplierPackagePricing> findByRatePlanIdAndTravelStartDateAndTravelEndDateAndEnabledTrue(
             Long ratePlanId, LocalDate travelStartDate, LocalDate travelEndDate);
 
-    /** All rates overlapping a stay window for a hotel (the inventory-x grid load). */
     @Query("select r from SupplierPackagePricing r where r.hotelId = :hotelId and r.enabled = true "
             + "and r.travelStartDate <= :endDate and r.travelEndDate >= :startDate")
     List<SupplierPackagePricing> findOverlapping(@Param("hotelId") Long hotelId,
                                    @Param("startDate") LocalDate startDate,
                                    @Param("endDate") LocalDate endDate);
 
-    /** Commission cascade target set (tf-main updateCommissionsForAllRates). */
     @Query("select r from SupplierPackagePricing r where r.hotelId = :hotelId and r.supplierId = :supplierId "
             + "and r.enabled = true and r.travelStartDate <= :endDate and r.travelEndDate >= :startDate")
     List<SupplierPackagePricing> findForCommissionCascade(@Param("hotelId") Long hotelId,

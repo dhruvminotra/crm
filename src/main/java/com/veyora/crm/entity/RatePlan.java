@@ -12,10 +12,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * A sellable room + meal-plan combination, the equivalent of tf-main
- * SupplierPackagePricing rows with type RATE_PLAN (created by addRatePlan).
- */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -32,7 +28,6 @@ public class RatePlan extends BaseEntity {
     @Column(name = "supplier_id", nullable = false)
     private Long supplierId;
 
-    /** e.g. "Deluxe Room - CP" (+ " - NRF" for non refundable), as built in tf-main. */
     @Column(name = "plan_name", nullable = false, length = 200)
     private String planName;
 
@@ -80,7 +75,6 @@ public class RatePlan extends BaseEntity {
     @Column(name = "commission_percent", precision = 7, scale = 2)
     private BigDecimal commissionPercent;
 
-    /** Cancellation policy rules serialized as JSON, as tf-main stores policyStr. */
     @Column(name = "cancellation_policy", columnDefinition = "TEXT")
     private String cancellationPolicyJson;
 

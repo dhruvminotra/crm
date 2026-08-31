@@ -9,10 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Dated rates for a rate plan - the equivalent of tf-main SupplierPackagePricing
- * rows with type PACKAGE_PRICING (written by updateHotelRates / addHotelRates).
- */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -35,14 +31,12 @@ public class SupplierPackagePricing extends BaseEntity {
     @Column(name = "travel_end_date", nullable = false)
     private LocalDate travelEndDate;
 
-    /** Applicable days of week as CSV of MON..SUN; empty means all days. */
     @Column(name = "applicable_days", length = 30)
     private String applicableDays;
 
     @Column(length = 3, nullable = false)
     private String currency;
 
-    /** Per-occupancy prices, mirroring the extranet update-rates form fields. */
     @Column(name = "single_sharing", precision = 12, scale = 2)
     private BigDecimal singleSharing;
 
@@ -64,7 +58,6 @@ public class SupplierPackagePricing extends BaseEntity {
     @Column(name = "min_stay")
     private Integer minStay;
 
-    /** Days in advance the rate must be booked (cut-off). */
     @Column(name = "cut_off_days")
     private Integer cutOffDays;
 
@@ -74,7 +67,6 @@ public class SupplierPackagePricing extends BaseEntity {
     @Column(name = "promo_code", length = 50)
     private String promoCode;
 
-    /** Rates loaded by suppliers may need auditing before going live (tf-main isAudited). */
     @Column(nullable = false)
     private boolean audited = true;
 

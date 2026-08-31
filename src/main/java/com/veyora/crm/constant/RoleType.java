@@ -2,11 +2,6 @@ package com.veyora.crm.constant;
 
 import lombok.Getter;
 
-/**
- * Mirrors tf-main RoleType (roletype column) with the tf-main single-char
- * role codes from User.ROLE_* (role column): A=admin, V=supervisor,
- * T=callcenter, E=supplier, S=reseller/agent, D=desk user, Z=system, U=user.
- */
 @Getter
 public enum RoleType {
     USER(0, "U"),

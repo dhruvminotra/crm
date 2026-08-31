@@ -12,5 +12,5 @@ WORKDIR /app
 COPY --from=build /app/target/crm.jar app.jar
 # Hosts inject PORT; Spring reads SERVER_PORT
 ENV SPRING_PROFILES_ACTIVE=prod
-EXPOSE 8082
-ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT:-8082} -jar app.jar"]
+EXPOSE 8080
+ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT:-8080} -jar app.jar"]

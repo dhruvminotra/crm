@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class UserRequest {
 
-    private Long userId; // null = create
+    private Long userId;
 
     @NotBlank
     @Email

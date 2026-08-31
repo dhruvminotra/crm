@@ -7,11 +7,10 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import lombok.Data;
 
-/** Mirrors the tf-main add/edit rate plan form (addRatePlan). */
 @Data
 public class RatePlanRequest {
 
-    private Long ratePlanId; // null = create
+    private Long ratePlanId;
 
     @NotNull
     private Long roomId;
@@ -24,7 +23,6 @@ public class RatePlanRequest {
     @NotNull
     private String currency;
 
-    /** Occupancy template; CUSTOM uses the explicit fields below. */
     private RoomOccupancy roomOccupancy;
 
     private Integer occupancy;
@@ -43,6 +41,5 @@ public class RatePlanRequest {
     private ContractType contractType;
     private BigDecimal commissionPercent;
 
-    /** Cancellation rules as JSON string, stored verbatim like tf-main policyStr. */
     private String cancellationPolicyJson;
 }

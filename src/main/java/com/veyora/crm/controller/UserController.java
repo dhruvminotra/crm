@@ -18,11 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * The user dashboard API, mirroring tf-main UserNavigation /user/&lt;action&gt;
- * (MANAGE_DESK_USERS, DESK_USER_ADD_UPDATE, SAVE_DESK_USER_STATUS) with the
- * tf-main WEBSITE_MANAGERS role gating.
- */
 @RestController
 @RequestMapping(Constant.API_V1 + "/user")
 @PreAuthorize("hasAnyRole('ADMIN','CALLCENTER','SUPERVISOR','PRODUCT','BUSINESS_MANAGER',"
@@ -43,7 +38,6 @@ public class UserController {
         return user;
     }
 
-    /** tf-main /user/manage-desk-users (search params uemail / uactive). */
     @GetMapping("/manage-desk-users")
     public ApiResponse<List<User>> manageDeskUsers(
             @RequestParam(name = "uemail", required = false) String partialNameEmail,
@@ -52,14 +46,12 @@ public class UserController {
         return ApiResponse.ok(userService.searchDeskUsers(user(), partialNameEmail, isActiveUsers, roleType));
     }
 
-    /** tf-main DESK_USER_ADD_UPDATE. */
     @PostMapping("/desk-user-add-update")
     public ApiResponse<User> deskUserAddUpdate(@Valid @RequestBody DeskUserRequest request) {
         return ApiResponse.ok("User details saved successfully!",
                 userService.saveDeskUserDetails(request, user()));
     }
 
-    /** tf-main SAVE_DESK_USER_STATUS. */
     @PostMapping("/save-desk-user-status")
     public ApiResponse<User> saveDeskUserStatus(@RequestParam Long userId,
             @RequestParam boolean activated) {

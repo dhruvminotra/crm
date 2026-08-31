@@ -12,7 +12,6 @@ public interface HotelSupplierMapRepository extends JpaRepository<HotelSupplierM
 
     boolean existsByHotelIdAndSupplierIdAndMapType(Long hotelId, Long supplierId, String mapType);
 
-    /** tf-main HotelSupplierMappingManager.getMappingsForCity. */
     List<HotelSupplierMap> findByMapTypeAndCityId(String mapType, Integer cityId);
 
     List<HotelSupplierMap> findByMapType(String mapType);

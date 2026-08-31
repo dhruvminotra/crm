@@ -8,10 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Hotel-to-supplier ownership mapping - the prerequisite for a hotel to be
- * manageable in the extranet (tf-main HotelSupplierMap).
- */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -32,11 +28,9 @@ public class HotelSupplierMap extends BaseEntity {
     @Column(name = "map_type", nullable = false, length = 20)
     private String mapType = TYPE_SUPPLIER;
 
-    /** City of the mapped hotel (tf-main map.setCityId). */
     @Column(name = "city_id")
     private Integer cityId;
 
-    /** Denormalized hotel name (tf-main map.setHotelName). */
     @Column(name = "hotel_name", length = 200)
     private String hotelName;
 }

@@ -1,6 +1,3 @@
--- Users table replicated from tf-main (src/sql/PostgresMain/accounts/create.sql
--- plus the alter patches the tf-main User entity loads).
--- user_id is bigserial (tf-main serial) so JPA Long ids validate cleanly.
 CREATE TABLE users (
     user_id                           BIGSERIAL NOT NULL,
     create_ts                         TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -31,7 +28,7 @@ CREATE TABLE users (
     txn_pin                           VARCHAR(10),
     comments                          TEXT,
     is_new                            CHAR(1),
-    -- role/acl additions (20120604 / 20120807 / 20130404 alters)
+
     roletype                          INTEGER DEFAULT 0,
     pagetype                          INTEGER,
     pageownerid                       BIGINT DEFAULT 0,
@@ -42,7 +39,7 @@ CREATE TABLE users (
     profile_pic_url                   VARCHAR(128),
     isloggedin                        BOOLEAN,
     login_partner_id                  INT4 DEFAULT -1,
-    -- agency / commercial columns (accounts patches)
+
     admin                             VARCHAR(101),
     grade                             VARCHAR(100),
     managed_by                        VARCHAR(101),
@@ -105,12 +102,11 @@ CREATE TABLE users (
     user_priveledges                  VARCHAR(101),
     prefix_code                       VARCHAR(20),
     CONSTRAINT pk_users PRIMARY KEY (user_id),
-    -- tf-main patch_users290807: uniqueness is per role + login partner
+
     CONSTRAINT users_email_key  UNIQUE (role, email, login_partner_id),
     CONSTRAINT users_mobile_key UNIQUE (role, mobile, login_partner_id)
 );
 
--- tf-main accounts/create.sql user_hist
 CREATE TABLE user_hist (
     user_id   BIGINT NOT NULL,
     create_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

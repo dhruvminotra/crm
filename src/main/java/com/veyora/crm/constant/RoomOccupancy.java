@@ -2,10 +2,6 @@ package com.veyora.crm.constant;
 
 import lombok.Getter;
 
-/**
- * Predefined occupancy templates for rate plans, mirroring tf-main RoomOccupancy.
- * CUSTOM means the caller supplies explicit occupancy numbers.
- */
 @Getter
 public enum RoomOccupancy {
     SINGLE(1, 1, 0, 0),

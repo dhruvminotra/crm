@@ -8,3 +8,8 @@ target/
 application-*.local.yml
 logs/
 bin/
+
+# Eclipse / STS (these compile without Lombok and poison target/classes)
+.classpath
+.project
+.settings/

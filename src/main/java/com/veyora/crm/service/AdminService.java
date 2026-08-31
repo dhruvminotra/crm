@@ -16,10 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Admin features: hotel master, room master, users and supplier mappings
- * (the tf-main admin/product side of the extranet).
- */
 @Service
 public class AdminService {
 
@@ -41,8 +37,6 @@ public class AdminService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    /* ---------------- hotels ---------------- */
-
     public List<MarketPlaceHotel> listHotels() {
         return hotelRepository.findByEnabledTrue();
     }
@@ -51,8 +45,6 @@ public class AdminService {
     public MarketPlaceHotel saveHotel(MarketPlaceHotel hotel) {
         return hotelRepository.save(hotel);
     }
-
-    /* ---------------- rooms (tf-main saveHotelRoomDetails) ---------------- */
 
     public List<HotelRoom> getRoomsByHotel(Long hotelId) {
         return hotelRoomRepository.findByHotelIdAndEnabledTrue(hotelId);
@@ -76,8 +68,6 @@ public class AdminService {
         return hotelRoomRepository.save(room);
     }
 
-    /* ---------------- supplier mapping (tf-main MAP_HOTEL) ---------------- */
-
     @Transactional
     public HotelSupplierMap mapHotelToSupplier(Long hotelId, Long supplierId, String mapType) {
         String type = mapType != null ? mapType : HotelSupplierMap.TYPE_SUPPLIER;
@@ -98,8 +88,6 @@ public class AdminService {
     public List<HotelSupplierMap> getMappingsForHotel(Long hotelId) {
         return hotelSupplierMapRepository.findByHotelIdAndMapType(hotelId, HotelSupplierMap.TYPE_SUPPLIER);
     }
-
-    /* ---------------- users ---------------- */
 
     public List<User> listUsers() {
         return userRepository.findAll();

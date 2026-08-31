@@ -14,10 +14,8 @@ public interface MarketPlaceHotelRepository extends JpaRepository<MarketPlaceHot
 
     List<MarketPlaceHotel> findByIdInAndEnabledTrue(List<Long> ids);
 
-    /** tf-main MiscAction.HOTEL_SUGGEST. */
     List<MarketPlaceHotel> findTop10ByNameStartingWithIgnoreCaseAndEnabledTrue(String prefix);
 
-    /** tf-main MiscAction.CITY_SUGGEST (cities come from the hotel catalog here). */
     @Query("select distinct h.cityId, h.cityName from MarketPlaceHotel h "
             + "where h.enabled = true and lower(h.cityName) like :prefix order by h.cityName")
     List<Object[]> suggestCities(@Param("prefix") String prefix);

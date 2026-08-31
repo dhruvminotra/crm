@@ -25,8 +25,6 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
 
-    // Patterns so any localhost port works in dev (vite hops to 5174+ when
-    // 5173 is busy); set explicit origins per environment in prod.
     @Value("${crm.cors.allowed-origins:http://localhost:*}")
     private String[] allowedOrigins;
 

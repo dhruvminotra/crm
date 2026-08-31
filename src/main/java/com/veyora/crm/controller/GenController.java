@@ -15,11 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Autocomplete endpoints mirroring tf-main /gen actions:
- * MiscAction.CITY_SUGGEST, MiscAction.HOTEL_SUGGEST and
- * UserManageAction.SUGGEST_USERS (supRls=true).
- */
 @RestController
 @RequestMapping(Constant.API_V1 + "/gen")
 public class GenController {

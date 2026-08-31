@@ -19,11 +19,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * The tf-main users table (accounts create.sql + alter patches), mapped for
- * the columns the CRM uses. Y/N char flags and the role char/roletype pair
- * are kept exactly as tf-main stores them.
- */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -42,7 +37,6 @@ public class User {
     @Column(name = "create_ts", updatable = false)
     private Instant createTs;
 
-    /** tf-main single-char role code (User.ROLE_*). */
     @JdbcTypeCode(Types.CHAR)
     @Column(name = "role", nullable = false, columnDefinition = "char(1)")
     private String role = "U";
@@ -109,7 +103,6 @@ public class User {
     @Column(columnDefinition = "TEXT")
     private String comments;
 
-    /** Desk-admin / parent-account linkage (tf-main pageownerid). */
     @Column(name = "pageownerid")
     private Long pageOwnerId = 0L;
 

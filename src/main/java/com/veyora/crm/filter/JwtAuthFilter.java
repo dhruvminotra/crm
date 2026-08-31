@@ -45,7 +45,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
             } catch (Exception ignored) {
-                // invalid/expired token -> request stays unauthenticated
+
             }
         }
         filterChain.doFilter(request, response);

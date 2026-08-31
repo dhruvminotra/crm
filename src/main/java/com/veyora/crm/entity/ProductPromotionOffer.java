@@ -14,10 +14,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Supplier promotion or discount on a hotel, equivalent of tf-main
- * ProductPromotionOffer with types SUPPLIER_PROMOTION / SUPPLIER_DISCOUNT.
- */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -38,18 +34,15 @@ public class ProductPromotionOffer extends BaseEntity {
     @Column(nullable = false, length = 200)
     private String title;
 
-    /** e.g. Early Bird, Last Minute, Long Stay - tf-main offer category. */
     @Column(length = 50)
     private String category;
 
-    /** Booking window. */
     @Column(name = "offer_start_date", nullable = false)
     private LocalDate offerStartDate;
 
     @Column(name = "offer_end_date", nullable = false)
     private LocalDate offerEndDate;
 
-    /** Travel window. */
     @Column(name = "travel_start_date", nullable = false)
     private LocalDate travelStartDate;
 
@@ -63,13 +56,9 @@ public class ProductPromotionOffer extends BaseEntity {
     @Column(name = "discount_value", nullable = false, precision = 12, scale = 2)
     private BigDecimal discountValue;
 
-    /* ---- restrictions (tf-main ProductPromotionOfferRestrictions) ---- */
-
-    /** CSV of room ids; empty means valid for all rooms. */
     @Column(name = "room_ids", length = 500)
     private String roomIds;
 
-    /** CSV of meal plan codes; empty means all meal plans. */
     @Column(name = "meal_plans", length = 100)
     private String mealPlans;
 

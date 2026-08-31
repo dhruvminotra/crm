@@ -1,5 +1,3 @@
--- Seed users (tf-main role chars: A=admin, E=supplier, D=desk user).
--- Password for all is "admin123" (BCrypt), local/dev convenience only.
 INSERT INTO users (role, roletype, activated, name, email, e_verified, e_activated,
                    mobile, m_verified, m_activated, password, base_currency, uuid)
 VALUES ('A', 1, 'Y', 'CRM Admin', 'admin@veyora.com', 'Y', 'Y',
@@ -11,7 +9,6 @@ VALUES ('A', 1, 'Y', 'CRM Admin', 'admin@veyora.com', 'Y', 'Y',
         '$2a$10$FL7WCxcy8B1/pPRezn/sdO8dADLU1C442gcMsv.s.yc.xC7EzrlHe', 'INR',
         '3f1c2a10-0000-4000-8000-000000000002');
 
--- Desk user managed by the hotelier (pageownerid = desk admin, as tf-main)
 INSERT INTO users (role, roletype, activated, name, email, mobile, password,
                    base_currency, pageownerid, uuid)
 VALUES ('D', 12, 'Y', 'Front Desk One', 'desk@veyora.com', '9800000003',

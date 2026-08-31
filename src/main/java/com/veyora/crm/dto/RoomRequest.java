@@ -4,11 +4,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-/** Mirrors tf-main HOTEL_ROOM_ADD_UPDATE_SAVE. */
 @Data
 public class RoomRequest {
 
-    private Long roomId; // null = create
+    private Long roomId;
 
     @NotNull
     private Long hotelId;

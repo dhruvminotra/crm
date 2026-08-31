@@ -24,10 +24,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Rate plans and dated rates, mirroring tf-main SupplierPackageManager plus the
- * HotelDataBean methods addRatePlan / updateHotelRates / loadRatePlansForManage.
- */
 @Service
 public class SupplierPackageService {
 
@@ -51,10 +47,6 @@ public class SupplierPackageService {
         this.hotelDataService = hotelDataService;
     }
 
-    /* --------------------------------------------------------- */
-    /* Rate plans (tf-main loadRatePlansForManage / addRatePlan)  */
-    /* --------------------------------------------------------- */
-
     public List<RatePlan> loadRatePlansForManage(Long hotelId) {
         return ratePlanRepository.findByHotelIdAndEnabledTrue(hotelId);
     }
@@ -64,11 +56,6 @@ public class SupplierPackageService {
                 .orElseThrow(() -> new NotFoundException("Rate plan " + ratePlanId + " not found"));
     }
 
-    /**
-     * Create or update a room + meal-plan rate plan. The plan name is derived
-     * as "&lt;room&gt; - &lt;meal code&gt;" (+ " - NRF" for non-refundable),
-     * exactly as tf-main addRatePlan builds it.
-     */
     @Transactional
     public RatePlan addOrUpdateRatePlan(RatePlanRequest request, User user) {
         HotelRoom room = hotelRoomRepository.findById(request.getRoomId())
@@ -129,19 +116,10 @@ public class SupplierPackageService {
         return ratePlanRepository.save(plan);
     }
 
-    /* ------------------------------------------------ */
-    /* Dated rates (tf-main updateHotelRates)            */
-    /* ------------------------------------------------ */
-
     public List<SupplierPackagePricing> loadRatesForRatePlan(Long ratePlanId) {
         return pricingRepository.findByRatePlanIdAndEnabledTrue(ratePlanId);
     }
 
-    /**
-     * Create/replace the rate for a travel window. An existing pricing with
-     * the same window is updated in place, otherwise a new one is stored -
-     * tf-main updateHotelRates + storeAndUpdateAvailablePackagePricing.
-     */
     @Transactional
     public SupplierPackagePricing updateHotelRates(RateUpdateRequest request, User user) {
         if (request.getEndDate().isBefore(request.getStartDate())) {
@@ -174,11 +152,10 @@ public class SupplierPackageService {
         pricing.setPromoCode(request.getPromoCode() != null ? request.getPromoCode()
                 : ratePlan.getPromoCode());
 
-        // Commission from the applicable COMMISSION policy, as in tf-main.
         if (ratePlan.getContractType() == ContractType.COMMISSIONABLE) {
             pricing.setCommissionPercent(resolveCommission(ratePlan));
         }
-        // Supplier-loaded rates may require auditing before going live.
+
         pricing.setAudited(hotelDataService.isSystemUser(user));
 
         log.debug("Storing rate for plan {} window {} - {}", ratePlan.getId(),
@@ -197,8 +174,7 @@ public class SupplierPackageService {
     }
 
     private boolean isCompletelyNonRefundable(String cancellationPolicyJson) {
-        // tf-main checks CancellationPolicy.isCompletelyNonRefunable(); here the
-        // JSON convention is {"nonRefundable": true, ...}
+
         return cancellationPolicyJson != null
                 && cancellationPolicyJson.replaceAll("\\s", "")
                         .contains("\"nonRefundable\":true");

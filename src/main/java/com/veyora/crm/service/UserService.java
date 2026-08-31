@@ -11,10 +11,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * The user dashboard backend, mirroring tf-main UserBean:
- * searchDeskUsers / saveDeskUserDetails / saveDeskUserStatus.
- */
 @Service
 public class UserService {
 
@@ -29,11 +25,6 @@ public class UserService {
         this.hotelDataService = hotelDataService;
     }
 
-    /**
-     * Search users for the dashboard (tf-main searchDeskUsers): name/email
-     * prefix (uemail), active filter (uactive) and role type. Non-system
-     * users only see their own desk users (pageownerid), as in tf-main.
-     */
     public List<User> searchDeskUsers(User loggedInUser, String partialNameEmail,
             Boolean isActiveUsers, RoleType roleType) {
         String activated = isActiveUsers == null ? null
@@ -53,7 +44,6 @@ public class UserService {
         return users;
     }
 
-    /** Create or update a user (tf-main saveDeskUserDetails). */
     @Transactional
     public User saveDeskUserDetails(DeskUserRequest request, User loggedInUser) {
         boolean isSystemUser = hotelDataService.isSystemUser(loggedInUser);
@@ -62,7 +52,7 @@ public class UserService {
         if (request.getUserId() != null) {
             user = userRepository.findById(request.getUserId())
                     .orElseThrow(() -> new NotFoundException("User " + request.getUserId() + " not found"));
-            // Non-admins may only edit their own desk users, as in tf-main.
+
             if (!isSystemUser && !loggedInUser.getUserId().equals(user.getPageOwnerId())
                     && !loggedInUser.getUserId().equals(user.getUserId())) {
                 throw new BadRequestException("You are not authorized to perform this operation");
@@ -105,7 +95,6 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    /** Activate/deactivate a user (tf-main saveDeskUserStatus). */
     @Transactional
     public User saveDeskUserStatus(Long userId, boolean activated, User loggedInUser) {
         User user = userRepository.findById(userId)
