@@ -9,6 +9,7 @@ import com.veyora.crm.dto.InventoryGridResponse;
 import com.veyora.crm.dto.InventoryUpdateRequest;
 import com.veyora.crm.dto.PolicyRequest;
 import com.veyora.crm.dto.ProductPromotionOfferRequest;
+import com.veyora.crm.dto.HotelSearchResultDto;
 import com.veyora.crm.dto.RatePlanRequest;
 import com.veyora.crm.dto.RateUpdateRequest;
 import com.veyora.crm.entity.User;
@@ -21,6 +22,7 @@ import com.veyora.crm.exceptionhandler.BadRequestException;
 import com.veyora.crm.service.AuthService;
 import com.veyora.crm.service.ContractService;
 import com.veyora.crm.service.HotelDataService;
+import com.veyora.crm.service.HotelSearchService;
 import com.veyora.crm.service.PackageDataService;
 import com.veyora.crm.service.SupplierPackageService;
 import jakarta.validation.Valid;
@@ -56,15 +58,28 @@ public class HotelController {
     private final PackageDataService packageDataService;
     private final SupplierPackageService supplierPackageService;
     private final ContractService contractService;
+    private final HotelSearchService hotelSearchService;
 
     public HotelController(HotelDataService hotelDataService,
             PackageDataService packageDataService,
             SupplierPackageService supplierPackageService,
-            ContractService contractService) {
+            ContractService contractService,
+            HotelSearchService hotelSearchService) {
         this.hotelDataService = hotelDataService;
         this.packageDataService = packageDataService;
         this.supplierPackageService = supplierPackageService;
         this.contractService = contractService;
+        this.hotelSearchService = hotelSearchService;
+    }
+
+    @GetMapping("/search")
+    public ApiResponse<List<HotelSearchResultDto>> search(
+            @RequestParam Integer cityId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkIn,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkOut,
+            @RequestParam(defaultValue = "1") int adults,
+            @RequestParam(defaultValue = "1") int rooms) {
+        return ApiResponse.ok(hotelSearchService.search(cityId, checkIn, checkOut, adults, rooms));
     }
 
     private User user() {

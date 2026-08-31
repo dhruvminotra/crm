@@ -2,14 +2,20 @@ package com.veyora.crm.controller;
 
 import com.veyora.crm.constant.Constant;
 import com.veyora.crm.dto.ApiResponse;
+import com.veyora.crm.dto.CityRequest;
+import com.veyora.crm.dto.CountryRequest;
+import com.veyora.crm.dto.HotelRequest;
 import com.veyora.crm.dto.RoomRequest;
 import com.veyora.crm.dto.UserRequest;
+import com.veyora.crm.entity.City;
+import com.veyora.crm.entity.Country;
 import com.veyora.crm.entity.User;
 import com.veyora.crm.entity.HotelRoom;
 import com.veyora.crm.entity.HotelSupplierMap;
 import com.veyora.crm.entity.MarketPlaceHotel;
 import com.veyora.crm.repository.UserRepository;
 import com.veyora.crm.service.AdminService;
+import com.veyora.crm.service.LocationService;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,11 +32,34 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminController {
 
     private final AdminService adminService;
+    private final LocationService locationService;
     private final UserRepository userRepository;
 
-    public AdminController(AdminService adminService, UserRepository userRepository) {
+    public AdminController(AdminService adminService, LocationService locationService,
+            UserRepository userRepository) {
         this.adminService = adminService;
+        this.locationService = locationService;
         this.userRepository = userRepository;
+    }
+
+    @GetMapping("/countries")
+    public ApiResponse<List<Country>> listCountries() {
+        return ApiResponse.ok(locationService.listCountries());
+    }
+
+    @PostMapping("/countries")
+    public ApiResponse<Country> saveCountry(@Valid @RequestBody CountryRequest request) {
+        return ApiResponse.ok("Country saved", locationService.saveCountry(request));
+    }
+
+    @GetMapping("/cities")
+    public ApiResponse<List<City>> listCities(@RequestParam(required = false) Integer countryId) {
+        return ApiResponse.ok(locationService.listCities(countryId));
+    }
+
+    @PostMapping("/cities")
+    public ApiResponse<City> saveCity(@Valid @RequestBody CityRequest request) {
+        return ApiResponse.ok("City saved", locationService.saveCity(request));
     }
 
     @GetMapping("/hotels")
@@ -39,8 +68,8 @@ public class AdminController {
     }
 
     @PostMapping("/hotels")
-    public ApiResponse<MarketPlaceHotel> saveHotel(@RequestBody MarketPlaceHotel hotel) {
-        return ApiResponse.ok("Hotel saved", adminService.saveHotel(hotel));
+    public ApiResponse<MarketPlaceHotel> saveHotel(@Valid @RequestBody HotelRequest request) {
+        return ApiResponse.ok("Hotel saved", adminService.saveHotel(request));
     }
 
     @GetMapping("/rooms")

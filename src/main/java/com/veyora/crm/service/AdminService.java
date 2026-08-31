@@ -1,12 +1,17 @@
 package com.veyora.crm.service;
 
+import com.veyora.crm.dto.HotelRequest;
 import com.veyora.crm.dto.RoomRequest;
+import com.veyora.crm.entity.City;
+import com.veyora.crm.entity.Country;
 import com.veyora.crm.entity.User;
 import com.veyora.crm.entity.HotelRoom;
 import com.veyora.crm.entity.HotelSupplierMap;
 import com.veyora.crm.entity.MarketPlaceHotel;
 import com.veyora.crm.exceptionhandler.BadRequestException;
 import com.veyora.crm.exceptionhandler.NotFoundException;
+import com.veyora.crm.repository.CityRepository;
+import com.veyora.crm.repository.CountryRepository;
 import com.veyora.crm.repository.UserRepository;
 import com.veyora.crm.repository.HotelRoomRepository;
 import com.veyora.crm.repository.HotelSupplierMapRepository;
@@ -20,17 +25,23 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdminService {
 
     private final MarketPlaceHotelRepository hotelRepository;
+    private final CityRepository cityRepository;
+    private final CountryRepository countryRepository;
     private final HotelRoomRepository hotelRoomRepository;
     private final HotelSupplierMapRepository hotelSupplierMapRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     public AdminService(MarketPlaceHotelRepository hotelRepository,
+            CityRepository cityRepository,
+            CountryRepository countryRepository,
             HotelRoomRepository hotelRoomRepository,
             HotelSupplierMapRepository hotelSupplierMapRepository,
             UserRepository userRepository,
             PasswordEncoder passwordEncoder) {
         this.hotelRepository = hotelRepository;
+        this.cityRepository = cityRepository;
+        this.countryRepository = countryRepository;
         this.hotelRoomRepository = hotelRoomRepository;
         this.hotelSupplierMapRepository = hotelSupplierMapRepository;
         this.userRepository = userRepository;
@@ -42,7 +53,25 @@ public class AdminService {
     }
 
     @Transactional
-    public MarketPlaceHotel saveHotel(MarketPlaceHotel hotel) {
+    public MarketPlaceHotel saveHotel(HotelRequest request) {
+        City city = cityRepository.findById(request.getCityId())
+                .orElseThrow(() -> new BadRequestException("City " + request.getCityId() + " not found"));
+        Country country = countryRepository.findById(city.getCountryId()).orElse(null);
+
+        MarketPlaceHotel hotel = request.getId() != null
+                ? hotelRepository.findById(request.getId())
+                        .orElseThrow(() -> new NotFoundException("Hotel " + request.getId() + " not found"))
+                : new MarketPlaceHotel();
+
+        hotel.setName(request.getName());
+        hotel.setCityId(city.getId());
+        hotel.setCityName(city.getName());
+        hotel.setCountryCode(country != null ? country.getCode() : null);
+        hotel.setStarRating(request.getStarRating());
+        hotel.setCruise(request.isCruise());
+        if (request.getEnabled() != null) {
+            hotel.setEnabled(request.getEnabled());
+        }
         return hotelRepository.save(hotel);
     }
 

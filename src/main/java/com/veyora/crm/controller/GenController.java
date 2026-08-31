@@ -3,10 +3,12 @@ package com.veyora.crm.controller;
 import com.veyora.crm.constant.Constant;
 import com.veyora.crm.constant.RoleType;
 import com.veyora.crm.dto.ApiResponse;
+import com.veyora.crm.entity.City;
 import com.veyora.crm.entity.MarketPlaceHotel;
 import com.veyora.crm.entity.User;
 import com.veyora.crm.repository.MarketPlaceHotelRepository;
 import com.veyora.crm.repository.UserRepository;
+import com.veyora.crm.service.LocationService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -24,10 +26,18 @@ public class GenController {
 
     private final MarketPlaceHotelRepository hotelRepository;
     private final UserRepository userRepository;
+    private final LocationService locationService;
 
-    public GenController(MarketPlaceHotelRepository hotelRepository, UserRepository userRepository) {
+    public GenController(MarketPlaceHotelRepository hotelRepository, UserRepository userRepository,
+            LocationService locationService) {
         this.hotelRepository = hotelRepository;
         this.userRepository = userRepository;
+        this.locationService = locationService;
+    }
+
+    @GetMapping("/msc/cities")
+    public ApiResponse<List<City>> cities() {
+        return ApiResponse.ok(locationService.listCities(null));
     }
 
     @GetMapping("/msc/city-suggest")
